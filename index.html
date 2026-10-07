@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en" data-theme="ocean">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive, beginner-friendly guide to Kubernetes architecture and request flows.">
+  <meta name="theme-color" content="#07111f">
+  <title>KubeScope — Kubernetes Flow Visualizer</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23326ce5'/%3E%3Cpath fill='white' d='M32 11l4 8 9-1 1 9 8 5-5 7 3 9-9 2-5 8-6-5-8 5-5-8-9-2 3-9-5-7 8-5 1-9 9 1zm0 10a11 11 0 100 22 11 11 0 000-22z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to learning content</a>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="KubeScope home">
+      <span class="brand-mark" aria-hidden="true">⎈</span>
+      <span><strong>KubeScope</strong><small>Kubernetes, made visible</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#explorer">Explorer</a>
+      <a href="#journeys">Flows</a>
+      <a href="#objects">Objects</a>
+      <a href="#references">References</a>
+    </nav>
+    <label class="theme-control">Theme
+      <select id="theme-select" aria-label="Color theme">
+        <option value="ocean">Kubernetes Ocean</option>
+        <option value="emerald">Obsidian Emerald</option>
+        <option value="amber">Sunset Amber</option>
+      </select>
+    </label>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">Interactive learning lab</p>
+        <h1>See how Kubernetes turns intent into running software.</h1>
+        <p class="hero-lead">Explore the control plane, worker nodes, networking, storage, and the reconciliation loops that keep a cluster healthy.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#journeys">Run a flow</a>
+          <a class="button secondary" href="#quick-start">Learn the mental model</a>
+        </div>
+        <ul class="hero-facts" aria-label="Learning highlights">
+          <li><strong>5</strong><span>guided flows</span></li>
+          <li><strong>13</strong><span>components</span></li>
+          <li><strong>0</strong><span>external dependencies</span></li>
+        </ul>
+      </div>
+      <div class="hero-orbit" aria-label="Kubernetes cluster summary illustration">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="hero-core"><span>⎈</span><strong>Desired state</strong><small>API-driven control loop</small></div>
+        <span class="satellite sat-api">API</span><span class="satellite sat-node">Node</span>
+        <span class="satellite sat-net">Network</span><span class="satellite sat-data">Data</span>
+      </div>
+    </section>
+
+    <section class="section" id="quick-start">
+      <div class="section-heading">
+        <div><p class="eyebrow">Start here</p><h2>The 60-second mental model</h2></div>
+        <p>You declare what should exist. Kubernetes continuously compares that desired state with reality and acts to close the gap.</p>
+      </div>
+      <div class="mental-model" aria-label="Kubernetes reconciliation loop">
+        <article><span>01</span><h3>Declare</h3><p>Submit an object such as a Deployment through the Kubernetes API.</p></article>
+        <i aria-hidden="true">→</i>
+        <article><span>02</span><h3>Store</h3><p>The API server validates the request and persists cluster state in etcd.</p></article>
+        <i aria-hidden="true">→</i>
+        <article><span>03</span><h3>Reconcile</h3><p>Controllers and the scheduler decide which actions are needed.</p></article>
+        <i aria-hidden="true">→</i>
+        <article><span>04</span><h3>Run & observe</h3><p>Kubelets run Pods and report status. The loop never stops.</p></article>
+      </div>
+      <aside class="note"><strong>Key idea:</strong> Kubernetes is not a one-time deployment script. It is a collection of control loops working toward the declared state.</aside>
+    </section>
+
+    <section class="section" id="explorer">
+      <div class="section-heading">
+        <div><p class="eyebrow">Architecture explorer</p><h2>Who does what?</h2></div>
+        <p>Select a component to see its responsibility, interactions, and a plain-language analogy.</p>
+      </div>
+      <div class="explorer-layout">
+        <div class="cluster-map" aria-label="Interactive Kubernetes cluster architecture">
+          <div class="map-zone edge-zone">
+            <p class="zone-label">Cluster edge & add-ons</p>
+            <button class="component" data-component="gateway"><span>⇲</span>Gateway / Ingress<small>External HTTP traffic</small></button>
+            <button class="component" data-component="dns"><span>⌁</span>Cluster DNS<small>Service discovery</small></button>
+            <button class="component" data-component="metrics"><span>↗</span>Metrics pipeline<small>Observability signal</small></button>
+          </div>
+          <div class="map-columns">
+            <div class="map-zone control-zone">
+              <p class="zone-label">Control plane · decides</p>
+              <button class="component" data-component="api"><span>API</span>API server<small>Front door</small></button>
+              <button class="component" data-component="etcd"><span>DB</span>etcd<small>Cluster state</small></button>
+              <button class="component" data-component="scheduler"><span>⌖</span>Scheduler<small>Places Pods</small></button>
+              <button class="component" data-component="controller"><span>↻</span>Controller manager<small>Reconciles state</small></button>
+              <button class="component" data-component="cloud"><span>☁</span>Cloud controller<small>Optional integration</small></button>
+            </div>
+            <div class="map-zone node-zone">
+              <p class="zone-label">Worker node · runs</p>
+              <button class="component" data-component="kubelet"><span>⚙</span>kubelet<small>Node agent</small></button>
+              <button class="component" data-component="runtime"><span>▣</span>Container runtime<small>Runs containers</small></button>
+              <button class="component" data-component="proxy"><span>⇄</span>Service proxy<small>Traffic rules</small></button>
+              <button class="component" data-component="pod"><span>⬡</span>Pod<small>Workload unit</small></button>
+              <button class="component" data-component="volume"><span>◫</span>Volume<small>Mounted data</small></button>
+            </div>
+          </div>
+          <p class="map-caption"><span></span> Core component <span></span> Add-on or implementation-dependent</p>
+        </div>
+        <aside class="detail-panel" aria-live="polite">
+          <div class="detail-top"><span id="detail-icon">API</span><p id="detail-kind">Control plane</p></div>
+          <h3 id="detail-title">kube-apiserver</h3>
+          <p id="detail-summary">The front door for the Kubernetes control plane.</p>
+          <dl>
+            <div><dt>Responsibility</dt><dd id="detail-role"></dd></div>
+            <div><dt>Talks to</dt><dd id="detail-links"></dd></div>
+            <div><dt>Think of it as</dt><dd id="detail-analogy"></dd></div>
+          </dl>
+          <a id="detail-doc" class="text-link" href="https://kubernetes.io/docs/concepts/overview/components/" target="_blank" rel="noopener noreferrer">Open official documentation ↗</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="journeys">
+      <div class="section-heading">
+        <div><p class="eyebrow">Guided flows</p><h2>Follow the signal</h2></div>
+        <p>Choose a real cluster event, then step through the systems involved.</p>
+      </div>
+      <div class="journey-tabs" role="tablist" aria-label="Kubernetes flow scenarios">
+        <button role="tab" aria-selected="true" data-journey="deploy">Deploy an app</button>
+        <button role="tab" aria-selected="false" data-journey="request">Serve a request</button>
+        <button role="tab" aria-selected="false" data-journey="recover">Recover a Pod</button>
+        <button role="tab" aria-selected="false" data-journey="scale">Autoscale</button>
+        <button role="tab" aria-selected="false" data-journey="config">Update config</button>
+      </div>
+      <div class="journey-card">
+        <div class="journey-visual">
+          <div id="flow-nodes" class="flow-nodes" aria-label="Current flow"></div>
+        </div>
+        <div class="journey-content">
+          <div class="journey-meta"><span id="journey-counter">Step 1 of 6</span><span id="journey-category">Control plane</span></div>
+          <div class="progress"><span id="journey-progress"></span></div>
+          <p class="eyebrow" id="journey-actor">You + kubectl</p>
+          <h3 id="journey-title">Submit desired state</h3>
+          <p id="journey-text"></p>
+          <pre><code id="journey-command"></code></pre>
+          <div class="journey-controls">
+            <button class="button secondary" id="previous-step">← Previous</button>
+            <button class="button primary" id="next-step">Next step →</button>
+            <button class="icon-button" id="reset-flow" title="Reset flow" aria-label="Reset flow">↺</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="objects">
+      <div class="section-heading">
+        <div><p class="eyebrow">Object relationships</p><h2>From Deployment to traffic</h2></div>
+        <p>These resources form a common stateless web application stack. Select an object for its job and lifecycle.</p>
+      </div>
+      <div class="object-chain" aria-label="Kubernetes object relationship chain">
+        <button data-object="deployment"><strong>Deployment</strong><small>declares rollout</small></button><i>→</i>
+        <button data-object="replicaset"><strong>ReplicaSet</strong><small>maintains count</small></button><i>→</i>
+        <button data-object="pod"><strong>Pods</strong><small>run containers</small></button><i>←</i>
+        <button data-object="service"><strong>Service</strong><small>stable endpoint</small></button><i>←</i>
+        <button data-object="gateway"><strong>Gateway / Ingress</strong><small>external route</small></button>
+      </div>
+      <div class="object-detail" aria-live="polite">
+        <span id="object-badge">Workload controller</span><h3 id="object-title">Deployment</h3><p id="object-description"></p>
+      </div>
+      <div class="concept-grid">
+        <article><span class="concept-icon">⚿</span><h3>Configuration</h3><p><strong>ConfigMap</strong> stores non-confidential settings. <strong>Secret</strong> stores sensitive data, but requires appropriate encryption and access controls.</p></article>
+        <article><span class="concept-icon">▤</span><h3>Persistent data</h3><p>A <strong>PersistentVolumeClaim</strong> asks for storage. A compatible volume is bound and mounted into the Pod.</p></article>
+        <article><span class="concept-icon">⌁</span><h3>Networking</h3><p>Services select Pods by labels. DNS provides stable names; NetworkPolicy can restrict allowed connections when supported by the network plugin.</p></article>
+        <article><span class="concept-icon">↗</span><h3>Scaling</h3><p>HorizontalPodAutoscaler adjusts replica count from observed metrics. Resource requests matter because utilization is calculated against them.</p></article>
+      </div>
+    </section>
+
+    <section class="section two-column" id="practice">
+      <div>
+        <p class="eyebrow">Read the cluster</p><h2>A small kubectl toolbox</h2>
+        <div class="command-list">
+          <button data-copy="kubectl get pods -A -o wide"><code>kubectl get pods -A -o wide</code><span>Pods and node placement</span><b>Copy</b></button>
+          <button data-copy="kubectl describe deployment/my-app"><code>kubectl describe deployment/my-app</code><span>State, events, and conditions</span><b>Copy</b></button>
+          <button data-copy="kubectl get svc,ingress,endpointslice"><code>kubectl get svc,ingress,endpointslice</code><span>Traffic path resources</span><b>Copy</b></button>
+          <button data-copy="kubectl logs deployment/my-app --tail=100"><code>kubectl logs deployment/my-app --tail=100</code><span>Recent application logs</span><b>Copy</b></button>
+          <button data-copy="kubectl top pods"><code>kubectl top pods</code><span>Live CPU and memory (Metrics API required)</span><b>Copy</b></button>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Avoid confusion</p><h2>Common misconceptions</h2>
+        <div class="myth-list">
+          <details open><summary>“A Service runs my application.”</summary><p>No. Pods run containers. A Service supplies a stable virtual endpoint and selects eligible Pods.</p></details>
+          <details><summary>“Ingress works after I create the YAML.”</summary><p>An Ingress resource needs an Ingress controller. For new designs, also evaluate the Kubernetes Gateway API.</p></details>
+          <details><summary>“A Secret is automatically encrypted.”</summary><p>Secret data is base64-encoded, not inherently encrypted. Configure encryption at rest and least-privilege RBAC.</p></details>
+          <details><summary>“Kubernetes adds persistence to a container.”</summary><p>Container filesystems are ephemeral. Stateful data needs an appropriate volume, claim, backup, and lifecycle plan.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="references">
+      <div class="section-heading">
+        <div><p class="eyebrow">Continue learning</p><h2>Authoritative references</h2></div>
+        <p>The explanations in this app are based on official Kubernetes documentation. Open these for precise behavior and current API guidance.</p>
+      </div>
+      <div class="reference-grid">
+        <a href="https://kubernetes.io/docs/concepts/overview/components/" target="_blank" rel="noopener noreferrer"><span>Architecture</span><strong>Kubernetes components</strong><small>Control plane, node components, and add-ons ↗</small></a>
+        <a href="https://kubernetes.io/docs/concepts/workloads/" target="_blank" rel="noopener noreferrer"><span>Workloads</span><strong>Pods and controllers</strong><small>Deployments, Jobs, StatefulSets, and more ↗</small></a>
+        <a href="https://kubernetes.io/docs/concepts/services-networking/" target="_blank" rel="noopener noreferrer"><span>Networking</span><strong>Services and traffic</strong><small>Cluster networking, DNS, Gateway, and Ingress ↗</small></a>
+        <a href="https://kubernetes.io/docs/concepts/storage/" target="_blank" rel="noopener noreferrer"><span>Storage</span><strong>Volumes and claims</strong><small>Persistent storage concepts and lifecycle ↗</small></a>
+        <a href="https://kubernetes.io/docs/concepts/configuration/" target="_blank" rel="noopener noreferrer"><span>Configuration</span><strong>Configure workloads</strong><small>ConfigMaps, Secrets, probes, and resources ↗</small></a>
+        <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank" rel="noopener noreferrer"><span>Scaling</span><strong>Horizontal autoscaling</strong><small>How HPA observes and changes replicas ↗</small></a>
+        <a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/" target="_blank" rel="noopener noreferrer"><span>Hands-on</span><strong>Kubernetes Basics</strong><small>Official interactive learning path ↗</small></a>
+        <a href="https://kubernetes.io/docs/reference/kubectl/quick-reference/" target="_blank" rel="noopener noreferrer"><span>CLI</span><strong>kubectl quick reference</strong><small>Everyday commands and patterns ↗</small></a>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <footer><span class="brand-mark" aria-hidden="true">⎈</span><p><strong>KubeScope</strong><br><small>An educational visualization—not a live cluster monitor.</small></p><a href="#top">Back to top ↑</a></footer>
+</body>
+</html>
