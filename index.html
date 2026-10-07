@@ -19,9 +19,9 @@
       <span><strong>KubeScope</strong><small>Kubernetes, made visible</small></span>
     </a>
     <nav aria-label="Primary navigation">
+      <a href="#learning-path">Levels</a>
       <a href="#explorer">Explorer</a>
       <a href="#journeys">Flows</a>
-      <a href="#objects">Objects</a>
       <a href="#references">References</a>
     </nav>
     <label class="theme-control">Theme
@@ -36,12 +36,12 @@
   <main id="main">
     <section class="hero" id="top">
       <div class="hero-copy">
-        <p class="eyebrow">Interactive learning lab</p>
-        <h1>See how Kubernetes turns intent into running software.</h1>
-        <p class="hero-lead">Explore the control plane, worker nodes, networking, storage, and the reconciliation loops that keep a cluster healthy.</p>
+        <p class="eyebrow">Learn at your own level</p>
+        <h1>Kubernetes can make sense—one layer at a time.</h1>
+        <p class="hero-lead">Start with a familiar port story, then gradually reveal objects, architecture, and production request mechanics. No Kubernetes background required.</p>
         <div class="hero-actions">
-          <a class="button primary" href="#journeys">Run a flow</a>
-          <a class="button secondary" href="#quick-start">Learn the mental model</a>
+          <a class="button primary" href="#learning-path">Choose my level</a>
+          <a class="button secondary" href="#quick-start">See the core idea</a>
         </div>
         <ul class="hero-facts" aria-label="Learning highlights">
           <li><strong>5</strong><span>guided flows</span></li>
@@ -57,9 +57,51 @@
       </div>
     </section>
 
+    <section class="section learning-path" id="learning-path">
+      <div class="section-heading">
+        <div><p class="eyebrow">Your learning path</p><h2>How deep should we go?</h2></div>
+        <p>Pick the language that feels comfortable. You can move between levels at any time; your choice is remembered on this device.</p>
+      </div>
+      <div class="level-picker" role="tablist" aria-label="Kubernetes explanation level">
+        <button class="level-button" role="tab" aria-selected="true" data-level="1" aria-controls="level-panel">
+          <span>Level 1</span><strong>First look</strong><small>No technical background</small>
+        </button>
+        <button class="level-button" role="tab" aria-selected="false" data-level="2" aria-controls="level-panel">
+          <span>Level 2</span><strong>App builder</strong><small>Cloud basics helpful</small>
+        </button>
+        <button class="level-button" role="tab" aria-selected="false" data-level="3" aria-controls="level-panel">
+          <span>Level 3</span><strong>System explorer</strong><small>Architecture and operations</small>
+        </button>
+        <button class="level-button" role="tab" aria-selected="false" data-level="4" aria-controls="level-panel">
+          <span>Level 4</span><strong>Deep dive</strong><small>Production mechanics</small>
+        </button>
+      </div>
+      <div class="level-status">
+        <div><span id="level-progress-label">Foundation · 1 of 4</span><strong id="level-audience">For curious beginners and non-technical teammates</strong></div>
+        <div class="level-progress" aria-hidden="true"><span id="level-progress"></span></div>
+      </div>
+      <article class="level-panel" id="level-panel" role="tabpanel" aria-live="polite" aria-labelledby="level-title">
+        <div class="level-copy">
+          <p class="eyebrow" id="level-kicker">A familiar story</p>
+          <h2 id="level-title" tabindex="-1">Imagine a busy shipping port</h2>
+          <p class="level-lead" id="level-lead">Your application is cargo that must stay available. Kubernetes is the port authority coordinating where it runs and replacing it when something fails.</p>
+          <div class="level-takeaway"><span>One thing to remember</span><strong id="level-takeaway">You describe the result you want; Kubernetes keeps working to maintain it.</strong></div>
+          <div class="level-actions">
+            <button class="button primary" id="next-level">Continue to Level 2 →</button>
+            <a class="button secondary" id="level-deep-link" href="#quick-start">Explore this level</a>
+          </div>
+        </div>
+        <div class="level-lesson" id="level-lesson"></div>
+      </article>
+      <div class="term-bridge">
+        <div><p class="eyebrow">Plain words → Kubernetes words</p><h3>Terminology bridge</h3></div>
+        <div id="term-list" class="term-list"></div>
+      </div>
+    </section>
+
     <section class="section" id="quick-start">
       <div class="section-heading">
-        <div><p class="eyebrow">Start here</p><h2>The 60-second mental model</h2></div>
+        <div><p class="eyebrow">Shared foundation</p><h2>The 60-second mental model</h2></div>
         <p>You declare what should exist. Kubernetes continuously compares that desired state with reality and acts to close the gap.</p>
       </div>
       <div class="mental-model" aria-label="Kubernetes reconciliation loop">

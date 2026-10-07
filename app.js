@@ -1,5 +1,42 @@
 "use strict";
 
+const levelData={
+  1:{
+    progress:"Foundation · 1 of 4",audience:"For curious beginners and non-technical teammates",kicker:"A familiar story",title:"Imagine a busy shipping port",lead:"Your application is cargo that must stay available. Kubernetes is the port authority coordinating where it runs and replacing it when something fails.",takeaway:"You describe the result you want; Kubernetes keeps working to maintain it.",deepLink:"#quick-start",deepLabel:"See the core idea",terms:[["Packed cargo","Container"],["Cargo group","Pod"],["Ship","Node"],["Whole harbor","Cluster"]],lesson:`<div class="lesson-flow" aria-label="Shipping port analogy">
+      <div class="lesson-node"><span>▣</span><strong>Pack the cargo</strong><small>Your app and its runtime are packaged so they travel together.</small></div><i>→</i>
+      <div class="lesson-node"><span>⚓</span><strong>Give the manifest</strong><small>Say how many copies should stay available.</small></div><i>→</i>
+      <div class="lesson-node"><span>⎈</span><strong>Keep it running</strong><small>Kubernetes finds space and replaces failed copies.</small></div>
+    </div>`
+  },
+  2:{
+    progress:"Concepts · 2 of 4",audience:"For developers and IT learners who know basic cloud concepts",kicker:"The blueprint level",title:"Describe the result, not every step",lead:"Kubernetes uses a declarative model. You provide a configuration describing the desired state; controllers continually compare it with the actual state and correct differences.",takeaway:"Pods run the app, Deployments manage copies, and Services give those changing copies one stable destination.",deepLink:"#objects",deepLabel:"Explore Kubernetes objects",terms:[["Final blueprint","Desired state"],["Running reality","Actual state"],["App copy","Pod"],["Stable address","Service"]],lesson:`<div class="state-board">
+      <div class="state-card"><span>You declare</span><strong>3 app copies</strong><p>A Deployment records the desired replica count and Pod template.</p></div>
+      <div class="state-arrow"><b>⇄</b><small>reconcile</small></div>
+      <div class="state-card"><span>Cluster reports</span><strong>2 app copies</strong><p>A controller detects the gap and creates a replacement Pod.</p></div>
+    </div><pre class="mini-yaml"><code>apiVersion: apps/v1
+kind: Deployment
+spec:
+  replicas: 3       # desired state
+  template:         # the Pod blueprint</code></pre>`
+  },
+  3:{
+    progress:"Architecture · 3 of 4",audience:"For engineers learning how the cluster is organized",kicker:"The system level",title:"The brain decides; the workers run",lead:"The control plane exposes the API and coordinates cluster state. Worker nodes provide the compute, networking, storage mounts, and container execution for your Pods.",takeaway:"Components coordinate through the API server. etcd is the state store; it is not a general application database.",deepLink:"#explorer",deepLabel:"Open architecture explorer",terms:[["Front desk","API server"],["Memory","etcd"],["Matchmaker","Scheduler"],["Node captain","kubelet"]],lesson:`<div class="architecture-lesson">
+      <div class="architecture-side"><span>Control plane</span><h3>Decides and observes</h3><ul><li>API server<small>Validates every API request</small></li><li>etcd<small>Persists API data</small></li><li>Scheduler<small>Selects a node</small></li><li>Controllers<small>Reconcile desired state</small></li></ul></div>
+      <div class="architecture-side"><span>Worker nodes</span><h3>Execute and report</h3><ul><li>kubelet<small>Manages assigned Pods</small></li><li>Runtime<small>Runs containers through CRI</small></li><li>Network data plane<small>Routes Service traffic</small></li><li>Pods<small>Host application containers</small></li></ul></div>
+    </div>`
+  },
+  4:{
+    progress:"Mechanics · 4 of 4",audience:"For practitioners investigating production behavior",kicker:"The production deep dive",title:"Trace a rollout through every control loop",lead:"A production update passes through authentication, authorization, admission, persistence, reconciliation, scheduling, node execution, and endpoint readiness.",takeaway:"Kubernetes components mostly observe API objects and publish new state; they do not form one long synchronous deployment script.",deepLink:"#journeys",deepLabel:"Run guided flows",terms:[["Identity check","Authentication"],["Permission check","RBAC"],["Placement decision","Binding"],["Ready destination","EndpointSlice"]],lesson:`<div class="deep-timeline" aria-label="Production rollout lifecycle">
+      <div class="deep-step"><div><strong>Accept the request</strong><small>API server authenticates, authorizes, runs admission, and validates.</small></div></div>
+      <div class="deep-step"><div><strong>Persist desired state</strong><small>The accepted object is committed through the API server to etcd.</small></div></div>
+      <div class="deep-step"><div><strong>Reconcile objects</strong><small>Deployment and ReplicaSet controllers create the required Pod objects.</small></div></div>
+      <div class="deep-step"><div><strong>Filter and score nodes</strong><small>The scheduler records a binding for each feasible Pod.</small></div></div>
+      <div class="deep-step"><div><strong>Prepare the Pod</strong><small>kubelet coordinates CRI, CNI, and storage integrations on the selected node.</small></div></div>
+      <div class="deep-step"><div><strong>Publish ready endpoints</strong><small>Only Ready backends should receive Service traffic during the rollout.</small></div></div>
+    </div>`
+  }
+};
+
 const components = {
   api:{icon:"API",kind:"Control plane · core",title:"kube-apiserver",summary:"The front door for the Kubernetes control plane.",role:"Exposes the Kubernetes HTTP API, authenticates and authorizes requests, validates objects, and coordinates persistence.",links:"kubectl and other clients, admission controllers, etcd, controllers, scheduler, and node agents.",analogy:"A guarded reception desk and shared switchboard.",doc:"https://kubernetes.io/docs/concepts/overview/components/#kube-apiserver"},
   etcd:{icon:"DB",kind:"Control plane · core",title:"etcd",summary:"A consistent, highly available key-value store for API server data.",role:"Persists the cluster's desired and observed state. Production clusters need a tested backup and restore plan.",links:"The API server. Other Kubernetes components do not normally access etcd directly.",analogy:"The authoritative ledger, not the decision maker.",doc:"https://kubernetes.io/docs/concepts/overview/components/#etcd"},
@@ -61,6 +98,22 @@ const objectData={
 const qs=(selector,root=document)=>root.querySelector(selector);
 const qsa=(selector,root=document)=>[...root.querySelectorAll(selector)];
 
+let currentLevel=1;
+function renderLevel(level,{focus=false}={}){
+  currentLevel=Math.min(4,Math.max(1,Number(level)||1));
+  const item=levelData[currentLevel];
+  qsa("[data-level]").forEach(button=>button.setAttribute("aria-selected",String(Number(button.dataset.level)===currentLevel)));
+  qs("#level-progress-label").textContent=item.progress; qs("#level-audience").textContent=item.audience;
+  qs("#level-progress").style.width=`${currentLevel*25}%`; qs("#level-kicker").textContent=item.kicker;
+  qs("#level-title").textContent=item.title; qs("#level-lead").textContent=item.lead;
+  qs("#level-takeaway").textContent=item.takeaway; qs("#level-lesson").innerHTML=item.lesson;
+  qs("#term-list").innerHTML=item.terms.map(([plain,term])=>`<span class="term-chip">${plain}<i>→</i><b>${term}</b></span>`).join("");
+  qs("#level-deep-link").href=item.deepLink; qs("#level-deep-link").textContent=item.deepLabel;
+  qs("#next-level").textContent=currentLevel===4?"Back to Level 1 ↺":`Continue to Level ${currentLevel+1} →`;
+  localStorage.setItem("kubescope-level",String(currentLevel));
+  if(focus)qs("#level-title").focus({preventScroll:true});
+}
+
 function selectComponent(key){
   const item=components[key]; if(!item)return;
   qsa(".component").forEach(el=>el.classList.toggle("active",el.dataset.component===key));
@@ -91,6 +144,11 @@ function selectObject(key){
 function toast(message){ const el=qs("#toast"); el.textContent=message; el.classList.add("show"); clearTimeout(toast.timer); toast.timer=setTimeout(()=>el.classList.remove("show"),1800); }
 
 qsa(".component").forEach(el=>el.addEventListener("click",()=>selectComponent(el.dataset.component)));
+qsa("[data-level]").forEach(el=>{
+  el.addEventListener("click",()=>renderLevel(el.dataset.level));
+  el.addEventListener("keydown",event=>{ if(!["ArrowLeft","ArrowRight"].includes(event.key))return; event.preventDefault(); const delta=event.key==="ArrowRight"?1:-1; const target=((currentLevel-1+delta+4)%4)+1; renderLevel(target); qs(`[data-level="${target}"]`).focus(); });
+});
+qs("#next-level").addEventListener("click",()=>renderLevel(currentLevel===4?1:currentLevel+1,{focus:true}));
 qsa("[data-journey]").forEach(el=>el.addEventListener("click",()=>{ currentJourney=el.dataset.journey; currentStep=0; qsa("[data-journey]").forEach(b=>b.setAttribute("aria-selected",String(b===el))); renderJourney(); }));
 qs("#previous-step").addEventListener("click",()=>{ if(currentStep>0)currentStep--; renderJourney(); });
 qs("#next-step").addEventListener("click",()=>{ const length=journeys[currentJourney].steps.length; currentStep=currentStep===length-1?0:currentStep+1; renderJourney(); });
@@ -100,4 +158,5 @@ qsa("[data-copy]").forEach(el=>el.addEventListener("click",async()=>{ try{ await
 qs("#theme-select").addEventListener("change",event=>{ document.documentElement.dataset.theme=event.target.value; localStorage.setItem("kubescope-theme",event.target.value); });
 
 const savedTheme=localStorage.getItem("kubescope-theme"); if(["ocean","emerald","amber"].includes(savedTheme)){ document.documentElement.dataset.theme=savedTheme; qs("#theme-select").value=savedTheme; }
-selectComponent("api"); selectObject("deployment"); renderJourney();
+const savedLevel=Number(localStorage.getItem("kubescope-level"));
+renderLevel(savedLevel>=1&&savedLevel<=4?savedLevel:1); selectComponent("api"); selectObject("deployment"); renderJourney();

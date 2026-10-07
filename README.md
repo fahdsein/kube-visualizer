@@ -2,9 +2,17 @@
 
 KubeScope is a self-contained, interactive learning app for understanding Kubernetes architecture, resource relationships, traffic flow, recovery, configuration, and autoscaling. It does not connect to or change a real cluster.
 
+The learning path is progressive so readers can choose the amount of technical detail that fits them:
+
+1. **First look** — a shipping-port metaphor with no assumed technical background
+2. **App builder** — desired state and the essential workload objects
+3. **System explorer** — control plane, worker nodes, and component interactions
+4. **Deep dive** — authentication, reconciliation, scheduling, execution, and endpoint readiness
+
 ## What learners can explore
 
 - Control plane, worker node, edge, storage, and add-on components
+- A remembered four-level explanation selector with plain-language terminology bridges
 - Guided flows for deployment, external traffic, Pod recovery, HPA, and configuration changes
 - Relationships between Deployment, ReplicaSet, Pod, Service, and Gateway/Ingress
 - Common `kubectl` inspection commands and misconceptions
